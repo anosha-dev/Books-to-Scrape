@@ -5,7 +5,7 @@ Selenium-based web scraper for Books to Scrape website.
 
 This project is made using Python and Selenium.
 
-It scrapes book data from the Books to Scrape website and saves the data in a CSV file.
+It visits the **Books to Scrape** website, collects book information from every page, and saves the data into a CSV file.
 
 ## Data Collected
 
