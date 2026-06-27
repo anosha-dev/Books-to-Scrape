@@ -1,7 +1,17 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import pandas as pd
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+# ---- Database Connection ----
+
+engine = create_engine(
+    f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+)
 # Open Chrome browser
 driver = webdriver.Chrome()
 
@@ -27,10 +37,10 @@ while True:
         stock = book.find_element(By.CSS_SELECTOR, "p.instock.availability"  ).text.strip()
             
         book_info = {
-            "Title": title,
-            "Price": price,
-            "Rating": rating,
-            "Stock": stock
+            "title": title,
+            "price": price,
+            "rating": rating,
+            "stock": stock
         }
 
         books_data.append(book_info)
@@ -47,8 +57,9 @@ while True:
 # Convert the list into a DataFrame
 df = pd.DataFrame(books_data)
 
-# Save the data into a CSV file
-df.to_csv("books.csv", index=False)
+
+# ---- Save to PostgreSQL ----
+df.to_sql("books", engine, if_exists="append", index=False)
 
 print("Data saved successfully!")
 
