@@ -35,7 +35,21 @@ while True:
         price = book.find_element(By.CLASS_NAME, "price_color").text
         rating = book.find_element( By.CLASS_NAME, "star-rating").get_attribute("class").replace("star-rating ", "")
         stock = book.find_element(By.CSS_SELECTOR, "p.instock.availability"  ).text.strip()
-            
+        
+        if stock == "In stock":
+          stock = True
+        else:
+          stock = False
+
+
+        price = price[1:]
+        price = float(price)
+
+
+        rating_map={"One":1, "Two":2, "Three":3, "Four":4, "Five":5}
+        rating = rating_map[rating] 
+
+
         book_info = {
             "title": title,
             "price": price,
@@ -65,3 +79,5 @@ print("Data saved successfully!")
 
 # Close the browser
 driver.quit()
+
+
