@@ -17,6 +17,10 @@ engine = create_engine(
 row = pd.read_sql("SELECT COUNT(id) FROM books", engine)
 row_no = row["count"][0]
 page_no = math.floor (row_no / 20)
+
+if row_no != 0 and row_no % 20 == 0:
+    page_no = page_no + 1
+
 print(page_no)
 
 # Open Chrome browser
@@ -47,6 +51,9 @@ while True:
         price = book.find_element(By.CLASS_NAME, "price_color").text
         rating = book.find_element( By.CLASS_NAME, "star-rating").get_attribute("class").replace("star-rating ", "")
         stock = book.find_element(By.CSS_SELECTOR, "p.instock.availability"  ).text.strip()
+
+        detailed_url1 = book.find_element(By.CLASS_NAME, "image_container")
+        detailed_url2= detailed_url1.find_element(By.TAG_NAME,"a").get_attribute("href")
         
         if stock == "In stock":
           stock = True
@@ -66,7 +73,8 @@ while True:
             "title": title,
             "price": price,
             "rating": rating,
-            "stock": stock
+            "stock": stock,
+            "detail_page":detailed_url2
         }
         
         if URL == starting_url:
@@ -86,7 +94,42 @@ while True:
                books_data.append(book_info)
 
 
+
+
+    for book_info in books_data:
+        Detailed_URL = book_info["detail_page"]
+        driver.get(Detailed_URL)
     
+        try:
+           description = driver.find_element(By.XPATH, "//div[@id='product_description']/following-sibling::p").text
+        except:
+           description = ""
+        
+        upc = driver.find_element(By.XPATH, "//th[text()='UPC']/following-sibling::td").text
+
+        product_type = driver.find_element(By.XPATH, "//th[text()='Product Type']/following-sibling::td").text
+
+        price_excluded_tax = driver.find_element(By.XPATH, "//th[text()='Price (excl. tax)']/following-sibling::td").text
+
+        price_included_tax= driver.find_element(By.XPATH, "//th[text()='Price (incl. tax)']/following-sibling::td").text 
+
+        tax = driver.find_element(By.XPATH, "//th[text()='Tax']/following-sibling::td").text 
+
+        availability = driver.find_element(By.XPATH, "//th[text()='Availability']/following-sibling::td").text
+
+        reviews = driver.find_element(By.XPATH, "//th[text()='Number of reviews']/following-sibling::td").text 
+
+        book_info["description"] = description
+        book_info["upc"] = upc 
+        book_info["product_type"] = product_type
+        book_info["price_excluded_tax"] = price_excluded_tax
+        book_info["price_included_tax"] = price_included_tax
+        book_info["tax"] = tax
+        book_info["availability"] = availability
+        book_info["reviews"] = reviews
+                
+        del book_info["detail_page"]
+
     if books_data:
       df = pd.DataFrame(books_data)
       df.to_sql("books", engine, if_exists="append", index=False)
@@ -96,6 +139,7 @@ while True:
 
     # Try to go to the next page
     try:
+        driver.get(URL)
         next_button = driver.find_element(By.CSS_SELECTOR, "li.next a")
         URL = next_button.get_attribute("href")
 
