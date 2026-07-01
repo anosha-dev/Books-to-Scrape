@@ -1,10 +1,11 @@
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import pandas as pd
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import os
 import math
+from sqlalchemy import create_engine, text
 
 load_dotenv()
 
@@ -54,6 +55,12 @@ while True:
 
         detailed_url1 = book.find_element(By.CLASS_NAME, "image_container")
         detailed_url2= detailed_url1.find_element(By.TAG_NAME,"a").get_attribute("href")
+
+        id = detailed_url2.split("_")
+        id = id[1]
+        id = id.split("/")
+        id = id[0]
+        id =int(id)
         
         if stock == "In stock":
           stock = True
@@ -70,6 +77,7 @@ while True:
 
 
         book_info = {
+            "id" : id,
             "title": title,
             "price": price,
             "rating": rating,
@@ -79,8 +87,7 @@ while True:
         
         if URL == starting_url:
 
-            title = title.replace("'", "")
-            book_query = f"SELECT COUNT(*) FROM books WHERE title = '{title}'"
+            book_query = f"SELECT COUNT(*) FROM books WHERE id = {id}"
             book_result = pd.read_sql(book_query, engine)
 
             book_count = book_result["count"][0]
@@ -119,6 +126,9 @@ while True:
 
         reviews = driver.find_element(By.XPATH, "//th[text()='Number of reviews']/following-sibling::td").text 
 
+
+
+
         book_info["description"] = description
         book_info["upc"] = upc 
         book_info["product_type"] = product_type
@@ -130,9 +140,13 @@ while True:
                 
         del book_info["detail_page"]
 
+
     if books_data:
-      df = pd.DataFrame(books_data)
-      df.to_sql("books", engine, if_exists="append", index=False)
+      with engine.connect() as conn:
+         for book in books_data:
+            conn.execute(text("INSERT INTO books (id, title, price, rating, stock, description, upc, product_type, price_excluded_tax, price_included_tax, tax, availability, reviews) VALUES (:id, :title, :price, :rating, :stock, :description, :upc, :product_type, :price_excluded_tax, :price_included_tax, :tax, :availability, :reviews) ON CONFLICT (id) DO NOTHING"), book)
+         conn.commit()
+
       print("Data saved successfully!")
       books_data.clear()
     
@@ -151,5 +165,8 @@ while True:
 
 # Close the browser
 driver.quit()
+
+
+
 
 
