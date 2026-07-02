@@ -85,20 +85,8 @@ while True:
             "detail_page":detailed_url2
         }
         
-        if URL == starting_url:
-
-            book_query = f"SELECT COUNT(*) FROM books WHERE id = {id}"
-            book_result = pd.read_sql(book_query, engine)
-
-            book_count = book_result["count"][0]
-
-            if book_count > 0:
-               continue
-            else:
-               books_data.append(book_info)
-        
-        else:
-               books_data.append(book_info)
+       
+    books_data.append(book_info)
 
 
 
