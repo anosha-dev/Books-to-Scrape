@@ -5,6 +5,8 @@ from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import os
 from celery_app import app
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
 load_dotenv()
 
@@ -13,8 +15,15 @@ engine = create_engine(
 )
 
 @app.task
-def scrape(start_page, end_page):
-    driver = webdriver.Chrome()
+def scrape(start_page, end_page): 
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.binary_location = "/usr/bin/chromium"
+
+    service = Service("/usr/bin/chromedriver")
+    driver = webdriver.Chrome(service=service, options=options)
     books_data = []
 
     while True:

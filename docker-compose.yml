@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  redis:
+    image: redis
+
+  postgresql:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: an123
+      POSTGRES_DB: scraper_db
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  celery:
+    build: .
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+  main:
+    build: .
+    command: python main.py
+    depends_on:
+      - redis
+      - postgresql
+      - celery
+
+volumes:
+  postgres_data:
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+  

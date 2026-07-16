@@ -1,7 +1,3 @@
-CREATE DATABASE scrapper_db;
-
-\c scraper_db
-
 DROP TABLE IF EXISTS books;
 
 CREATE TABLE books (
