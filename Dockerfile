@@ -11,9 +11,8 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 
-COPY celery_app.py .
-COPY main.py .
-COPY tasks.py .
+COPY app/ app/
+
 COPY .env .
 
-CMD ["python", "-m", "celery", "-A", "celery_app", "worker", "--loglevel=info"]
+CMD ["python", "-m", "celery", "-A", "app.celery_app", "worker", "--loglevel=info"]

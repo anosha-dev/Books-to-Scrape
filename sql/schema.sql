@@ -6,6 +6,7 @@ CREATE TABLE books (
     price NUMERIC,
     rating INTEGER,
     stock BOOLEAN,
+    detail_page TEXT,
     description TEXT,
     upc VARCHAR(50),
     product_type VARCHAR(50),

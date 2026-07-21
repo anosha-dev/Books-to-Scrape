@@ -1,50 +1,107 @@
 # Books-to-Scrape
 
-A web scraper for the [Books to Scrape](https://books.toscrape.com/) website.
+A web scraping application built with **Python**, **Selenium**, **Celery**, **Redis**, **PostgreSQL**, and **Docker**.
 
-## Description
+The application scrapes book information from the **Books to Scrape** website and stores the extracted data in a PostgreSQL database. Celery executes scraping tasks asynchronously while Redis serves as the message broker.
 
-This project is built using Python and Selenium. It scrapes book data from all pages of the website and stores it in a PostgreSQL database.
+---
 
-## Data Collected
+## Features
 
-- Title
-- Price
-- Rating
-- Stock
+- Scrapes book data from https://books.toscrape.com/
+- Extracts:
+  - Book ID
+  - Title
+  - Price
+  - Rating
+  - Stock Status
+  - Product Description
+  - UPC
+  - Product Type
+  - Price (Excluding Tax)
+  - Price (Including Tax)
+  - Tax
+  - Availability
+  - Number of Reviews
+- Stores scraped data in PostgreSQL
+- Uses Celery for asynchronous task execution
+- Uses Redis as the message broker
+- Runs using Docker and Docker Compose
 
-## Requirements
+---
 
-- Python 3
+## Technologies Used
+
+- Python
 - Selenium
-- Pandas
-- SQLAlchemy
-- psycopg2
-- Google Chrome
 - PostgreSQL
+- SQLAlchemy
+- Celery
+- Redis
+- Docker
+- Docker Compose
 
-```bash
-pip install -r requirements.txt
+---
+
+## Project Structure
+
+```text
+Books-to-Scrape/
+│
+├── app/
+│   ├── __init__.py
+│   ├── celery_app.py
+│   ├── config.py
+│   ├── database.py
+│   ├── main.py
+│   ├── scraper.py
+│   └── tasks.py
+│
+├── sql/
+│   └── schema.sql
+│
+├── tests/
+│
+├── .env.example
+├── .gitignore
+├── docker-compose.yml
+├── Dockerfile
+├── README.md
+└── requirements.txt
 ```
 
-## Setup
+---
 
-1. Install PostgreSQL and open pgAdmin
-2. Run `schema.sql` in the Query Tool to create the table
-3. Copy `.env.example` to `.env` and add your database credentials
+## Getting Started
 
-## How to Run
+Run the application using Docker Compose.
 
 ```bash
-python scraper.py
+docker compose up --build
 ```
 
-Data will be saved to the `books` table in your PostgreSQL database.
+---
 
-## Website
+## Database
 
-https://books.toscrape.com/
+The PostgreSQL database schema is initialized using:
+
+```text
+sql/schema.sql
+```
+
+---
+
+## Workflow
+
+1. `main.py` creates scraping tasks.
+2. Redis queues the tasks.
+3. Celery workers execute the tasks.
+4. Selenium scrapes book information.
+5. The scraped data is stored in PostgreSQL.
+
+---
 
 ## Author
 
-Anosha
+**Anosha**
