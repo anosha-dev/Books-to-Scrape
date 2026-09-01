@@ -1,47 +1,42 @@
-# Books-to-Scrape
+# Books to Scrape
 
-A web scraping application built with **Python**, **Selenium**, **Celery**, **Redis**, **PostgreSQL**, and **Docker**.
+A web scraping application built with Python that collects book information from [Books to Scrape](https://books.toscrape.com/) and stores it in a PostgreSQL database.
 
-The application scrapes book information from the **Books to Scrape** website and stores the extracted data in a PostgreSQL database. Celery executes scraping tasks asynchronously while Redis serves as the message broker.
-
----
+The application uses Selenium for scraping, Celery for asynchronous task processing, Redis as the message broker, and Docker Compose to run the application and its services in containers.
 
 ## Features
 
-- Scrapes book data from https://books.toscrape.com/
-- Extracts:
-  - Book ID
-  - Title
-  - Price
-  - Rating
-  - Stock Status
-  - Product Description
-  - UPC
-  - Product Type
-  - Price (Excluding Tax)
-  - Price (Including Tax)
-  - Tax
-  - Availability
-  - Number of Reviews
-- Stores scraped data in PostgreSQL
-- Uses Celery for asynchronous task execution
-- Uses Redis as the message broker
-- Runs using Docker and Docker Compose
+* Scrapes book information from the Books to Scrape website
+* Extracts:
 
----
+  * Book ID
+  * Title
+  * Price
+  * Rating
+  * Stock Status
+  * Product Description
+  * UPC
+  * Product Type
+  * Price excluding tax
+  * Price including tax
+  * Tax
+  * Availability
+  * Number of reviews
+* Stores scraped data in PostgreSQL
+* Processes scraping tasks asynchronously using Celery
+* Uses Redis as the Celery message broker
+* Runs the application using Docker and Docker Compose
 
-## Technologies Used
+## Tech Stack
 
-- Python
-- Selenium
-- PostgreSQL
-- SQLAlchemy
-- Celery
-- Redis
-- Docker
-- Docker Compose
-
----
+* Python
+* Selenium
+* PostgreSQL
+* SQLAlchemy
+* Celery
+* Redis
+* Docker
+* Docker Compose
 
 ## Project Structure
 
@@ -70,17 +65,44 @@ Books-to-Scrape/
 └── requirements.txt
 ```
 
----
-
 ## Getting Started
 
-Run the application using Docker Compose.
+### Prerequisites
+
+Make sure you have Docker and Docker Compose installed.
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/anosha-dev/Books-to-Scrape.git
+cd Books-to-Scrape
+```
+
+### Configure Environment Variables
+
+Create a `.env` file using the provided example:
+
+```bash
+cp .env.example .env
+```
+
+Update the environment variables if needed.
+
+### Run the Application
+
+Build and start the containers:
 
 ```bash
 docker compose up --build
 ```
 
----
+## Workflow
+
+1. `main.py` creates the scraping tasks.
+2. Redis receives and queues the tasks.
+3. Celery workers process the tasks asynchronously.
+4. Selenium scrapes the book information.
+5. The scraped data is stored in PostgreSQL.
 
 ## Database
 
@@ -90,18 +112,8 @@ The PostgreSQL database schema is initialized using:
 sql/schema.sql
 ```
 
----
-
-## Workflow
-
-1. `main.py` creates scraping tasks.
-2. Redis queues the tasks.
-3. Celery workers execute the tasks.
-4. Selenium scrapes book information.
-5. The scraped data is stored in PostgreSQL.
-
----
-
 ## Author
 
 **Anosha**
+
+[GitHub Profile](https://github.com/anosha-dev)
